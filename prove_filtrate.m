@@ -1,11 +1,12 @@
 clear all ; close all
 
- %load prove_con_presa_oggetto.mat
+ % load prove_con_presa_oggetto.mat
  load prove_senza_presa_oggetto.mat
-% load tutte_le_prove.mat
+ %load tutte_le_prove.mat
 
 %%
-for i=35:35
+masse_stimate = [];
+for i=1:4
     ndata=length(tests(i).time);
     gripper_position=tests(i).position;
     gripper_velocity=tests(i).velocity;
@@ -38,39 +39,52 @@ for i=35:35
         end
     end
     
-    filtered_tests(i) = struct('time',tests(i).time,'position_filt',gripper_position_filt,'velocity_filt',gripper_velocity_filt,'effort_filt',gripper_effort_filt);
-   
-    j = find(filtered_tests(i).time(:,1) >= 1 & filtered_tests(i).time(:,1)<=9);
- 
-
+    filtered_tests(i) = struct('time',tests(i).time,'position_filt',gripper_position_filt,'velocity_filt',gripper_velocity_filt,'acceleration_filt',gripper_acceleration_filt,'effort_filt',gripper_effort_filt);
+    j_1 = find((abs(filtered_tests(i).acceleration_filt(:,1)))/(max(abs(filtered_tests(i).acceleration_filt(:,1)))) >= 0.5);
+    ji = min(j_1)-10;
+    jf = max(j_1)+10;
+    j = linspace(ji,jf,jf-ji+1);
+    % j = find(filtered_tests(i).time(:,1) >= 1 & filtered_tests(i).time(:,1)<=9);
+    % regressore=[gripper_acceleration_filt(j,1) gripper_velocity_filt(j,1) sign(gripper_velocity_filt(j,1)) ones(length(j),1)];
     regressore=[gripper_acceleration_filt(j,1) gripper_velocity_filt(j,1) sign(gripper_velocity_filt(j,1))];
-    
-    parametri=regressore\gripper_effort_filt(j,1);
-    
+    parametri=regressore\gripper_effort_filt(j,1);   % param:  m, fattrdin, fattrs, fext
     gripper_effort_filt_model=regressore*parametri;
+    masse_stimate(i) = parametri(1);
+
     figure
     plot([gripper_effort_filt(j,1),gripper_effort_filt_model])
     legend('Torque','Model torque')
 
+    
+
+
     figure
-    subplot(311)
+    subplot(411)
     plot(tests(i).time,gripper_position_filt)
     grid on
     xlabel('t')
     ylabel('p [m]')
 
-    subplot(312)
+    subplot(412)
     plot(tests(i).time,gripper_velocity_filt)
     grid on
     xlabel('t')
     ylabel('v [m/s]')
 
+    subplot(413)
+    plot(tests(i).time,gripper_acceleration_filt)
+    grid on
+    xlabel('t')
+    ylabel('a [m/s^2]')
 
-    subplot(313)
+
+    subplot(414)
     plot(tests(i).time,gripper_effort_filt)
     grid on
     xlabel('t')
     ylabel('effort [N]')
 
-end
 
+    
+
+end
