@@ -27,6 +27,8 @@ classdef (Abstract)  BaseDetector < handle & matlab.mixin.Heterogeneous
         obj = starting(obj, position, velocity, effort)
 
         % Compute if the gripper is grasping
-        grasped = step(obj, position, velocity, effort)
+        function grasped = step(obj, position, velocity, effort)
+            
+        end
     end
 end
