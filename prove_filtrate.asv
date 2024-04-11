@@ -1,13 +1,13 @@
 clear all ; close all
 
- %load prove_con_presa_oggetto.mat % 2a e 4a prova da scartare
- %load prove_senza_presa_oggetto.mat
- load tutte_le_prove.mat
+ load prove_con_presa_oggetto.mat % 2a e 4a prova da scartare
+ % load prove_senza_presa_oggetto.mat
+ %load tutte_le_prove.mat
 
 %%
 masse_stimate = [];
 grasped = [];
-for i=1:61
+for i=1:12
     clear grasped
     ndata=length(tests(i).time);
     gripper_position=tests(i).position;
@@ -43,33 +43,39 @@ for i=1:61
     
     filtered_tests(i) = struct('time',tests(i).time,'position_filt',gripper_position_filt,'velocity_filt',gripper_velocity_filt,'acceleration_filt',gripper_acceleration_filt,'effort_filt',gripper_effort_filt);
     j_1 = find((abs(filtered_tests(i).acceleration_filt(:,1)))/(max(abs(filtered_tests(i).acceleration_filt(:,1)))) >= 0.5);
-    ji = min(j_1)-1000;
+    ji = min(j_1)-10;
     jf = max(j_1)+10;
     j = linspace(ji,jf,jf-ji+1);
-    j = find(filtered_tests(i).time(:,1) >= 1 & filtered_tests(i).time(:,1)<=9);
-    regressore=[gripper_acceleration_filt(j,1) gripper_velocity_filt(j,1) sign(gripper_velocity_filt(j,1)) ones(length(j),1)];
+    % j = find(filtered_tests(i).time(:,1) >= 1 & filtered_tests(i).time(:,1)<=9);
+    % regressore=[gripper_acceleration_filt(j,1) gripper_velocity_filt(j,1) sign(gripper_velocity_filt(j,1)) ones(length(j),1)];
     regressore=[gripper_acceleration_filt(j,1) gripper_velocity_filt(j,1) sign(gripper_velocity_filt(j,1))];
     parametri=regressore\gripper_effort_filt(j,1);   % param:  m, fattrdin, fattrs, fext
     gripper_effort_filt_model=regressore*parametri;
     masse_stimate(i) = parametri(1);
 
-    figure
-    plot([gripper_effort_filt(j,1),gripper_effort_filt_model])
-    legend('Torque','Model torque')
+    % figure
+    % plot([gripper_effort_filt(j,1),gripper_effort_filt_model])
+    % legend('Torque','Model torque')
 
     
-    % algoritmo grasped soglia 
-    % th_eff = 0.37;
-    % th_acc = -0.01;
-    % for i_check = 1:length(gripper_position_filt)
-    %     effort = gripper_effort_filt(i_check);
-    %     acceleration = gripper_acceleration_filt(i_check);
-    %     if (effort > th_eff && acceleration < th_acc)
-    %         grasped(i_check)=1;
-    %     else
-    %         grasped(i_check)=0;
-    %     end
+    % derivata dell'effort
+    % for i_ef=1:length(gripper_effort)
+    %     gripper_effort_p(i_ef) = diff()
     % end
+    % 
+    % gripper_effort_p = diff(gripper_effort,)
+  
+    th_eff = 0.36;
+    th_acc = -0.01;
+    for i_check = 1:length(gripper_position_filt)
+        effort = gripper_effort_filt(i_check);
+        acceleration = gripper_acceleration_filt(i_check);
+        if (effort > th_eff && acceleration < th_acc)
+            grasped(i_check)=1;
+        else
+            grasped(i_check)=0;
+        end
+    end
     
 
     figure
@@ -101,12 +107,12 @@ for i=1:61
     % soglia effort
     % yline(0.38);
 
-    % subplot(515)
-    % plot(tests(i).time,grasped')
-    % grid on
-    % xlabel('t')
-    % ylabel('grasped?')
-    % hold on
+    subplot(515)
+    plot(tests(i).time,grasped')
+    grid on
+    xlabel('t')
+    ylabel('grasped?')
+    hold on
     
 
 end
