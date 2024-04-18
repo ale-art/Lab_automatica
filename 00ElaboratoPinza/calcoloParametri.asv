@@ -1,11 +1,14 @@
 clear all ; close all
 
-%  load prove_con_presa_oggetto.mat
- load prove_senza_presa_oggetto.mat
+% load prove_con_presa_oggetto.mat
+
+load prove_senza_presa_oggetto.mat
+tests(2) = []; tests(4) = []; % remove invalid tests
 % load tutte_le_prove.mat
 
 %%
-for i=4:12
+
+for i=1:length(tests)
     ndata=length(tests(i).time);
     gripper_position=tests(i).position;
     gripper_velocity=tests(i).velocity;
@@ -37,41 +40,54 @@ for i=4:12
             gripper_acceleration_filt(idx,iax) = g_filter_der*gripper_velocity((idx-window):(idx+window),iax);
         end
     end
-    
-    parametri = [];
-    filtered_tests(i) = struct('time',tests(i).time,'position_filt',gripper_position_filt,'velocity_filt',gripper_velocity_filt,'effort_filt',gripper_effort_filt,'parametri_obt',parametri);
    
-    % firstE = find(abs(filtered_tests(i).velocity_filt(:,1)) >= 2*10^-3,1,'first');
-    % lastE = find(abs(filtered_tests(i).velocity_filt(:,1)) >= 2*10^-3,1,'last');
-     
-    regressore=[gripper_acceleration_filt(:,1) gripper_velocity_filt(:,1) tanh(100*gripper_velocity_filt(:,1))];
+   regressore=[gripper_acceleration_filt(:,1) gripper_velocity_filt(:,1) tanh(1000*gripper_velocity_filt(:,1))];
     
-    filtered_tests(i).parametri_obt=regressore\gripper_effort_filt(:,1);
-    
-    gripper_effort_filt_model=regressore*filtered_tests(i).parametri_obt;
-    % figure
-    % plot([gripper_effort_filt(firstE:lastE,1),gripper_effort_filt_model])
-    % legend('Torque','Model torque')
+   % parametri e gripper_effort_filt_model delle singole prove NON utilizzati
+   parametri=regressore\gripper_effort_filt(:,1);
+   gripper_effort_filt_model=regressore*parametri;
+   
+   filtered_tests(i) = struct('time',tests(i).time,'position_filt',gripper_position_filt, ...
+       'velocity_filt',gripper_velocity_filt,'effort_filt',gripper_effort_filt,'parametri_test', ...
+       parametri,'regressore_test',regressore);
 
-    figure
-    subplot(311)
-    plot(tests(i).time,gripper_position_filt)
-    grid on
-    xlabel('t')
-    ylabel('p [m]')
-    % 
-    % subplot(312)
-    % plot(tests(i).time,gripper_velocity_filt)
-    % grid on
-    % xlabel('t')
-    % ylabel('v [m/s]')
-    % 
-    % 
-    % subplot(313)
-    % plot(tests(i).time,gripper_effort_filt)
-    % grid on
-    % xlabel('t')
-    % ylabel('effort [N]')
+%     figure
+%     subplot(411)
+%     plot(tests(i).time,gripper_position_filt)
+%     grid on
+%     xlabel('t')
+%     ylabel('p [m]')
+% 
+%     subplot(412)
+%     plot(tests(i).time,gripper_velocity_filt)
+%     grid on
+%     xlabel('t')
+%     ylabel('v [m/s]')
+% 
+% 
+%     subplot(413)
+%     plot(tests(i).time,gripper_effort_filt)
+%     grid on
+%     xlabel('t')
+%     ylabel('effort [N]')
+%       
+%     subplot(414)
+%     plot(tests(i).time,gripper_acceleration_filt)
+%     grid on
+%     xlabel('t')
+%     ylabel('acceleration [m/s^2]')
 
 end
+%% calcolo parametri per tutte le prove
 
+% Concatenate all elements of the cell array filtered_tests.regressore_test into a matrix
+regressore_tot = cell2mat({filtered_tests.regressore_test}');
+
+% Concatenate all elements of the cell array filtered_tests.effort_filt into a matrix
+gripper_effort_filt_tot = cell2mat({filtered_tests.effort_filt}');
+
+% Perform linear regression: solve the system regressore_tot * parametri = gripper_effort_filt_tot
+% where parametri is the coefficient vector we want to find
+parametri_tot = regressore_tot \ gripper_effort_filt_tot;
+
+gripper_effort_filt_model=regressore_tot*parametri;
