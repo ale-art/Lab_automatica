@@ -3,7 +3,7 @@ clear all ; close all
 % load prove_con_presa_oggetto.mat
 
 load prove_senza_presa_oggetto.mat
-tests(2) = []; tests(4) = []; % remove invalid tests
+%tests(2) = []; tests(4) = []; % remove invalid tests
 % load tutte_le_prove.mat
 
 %%
@@ -41,7 +41,7 @@ for i=1:length(tests)
     end
    
    regressore=[gripper_acceleration_filt(:,1) gripper_velocity_filt(:,1) tanh(1000*gripper_velocity_filt(:,1))];
-    
+   
    % parametri e gripper_effort_filt_model delle singole prove NON utilizzati
    parametri=regressore\gripper_effort_filt(:,1);
    gripper_effort_filt_model=regressore*parametri;
@@ -50,31 +50,31 @@ for i=1:length(tests)
        'velocity_filt',gripper_velocity_filt,'effort_filt',gripper_effort_filt,'parametri_test', ...
        parametri,'regressore_test',regressore);
 
-%     figure
-%     subplot(411)
-%     plot(tests(i).time,gripper_position_filt)
-%     grid on
-%     xlabel('t')
-%     ylabel('p [m]')
-% 
-%     subplot(412)
-%     plot(tests(i).time,gripper_velocity_filt)
-%     grid on
-%     xlabel('t')
-%     ylabel('v [m/s]')
-% 
-% 
-%     subplot(413)
-%     plot(tests(i).time,gripper_effort_filt)
-%     grid on
-%     xlabel('t')
-%     ylabel('effort [N]')
-%       
-%     subplot(414)
-%     plot(tests(i).time,gripper_acceleration_filt)
-%     grid on
-%     xlabel('t')
-%     ylabel('acceleration [m/s^2]')
+    % figure
+    % subplot(411)
+    % plot(tests(i).time,gripper_position_filt)
+    % grid on
+    % xlabel('t')
+    % ylabel('p [m]')
+    % 
+    % subplot(412)
+    % plot(tests(i).time,gripper_velocity_filt)
+    % grid on
+    % xlabel('t')
+    % ylabel('v [m/s]')
+    % 
+    % 
+    % subplot(413)
+    % plot(tests(i).time,gripper_effort_filt)
+    % grid on
+    % xlabel('t')
+    % ylabel('effort [N]')
+    % 
+    % subplot(414)
+    % plot(tests(i).time,gripper_acceleration_filt)
+    % grid on
+    % xlabel('t')
+    % ylabel('acceleration [m/s^2]')
 
 end
 %% calcolo parametri per tutte le prove

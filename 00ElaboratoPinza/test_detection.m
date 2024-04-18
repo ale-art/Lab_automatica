@@ -1,41 +1,57 @@
 clear all;close all;clc
 
 load tutte_le_prove.mat
+% load prove_con_presa_oggetto.mat
+% load prove_senza_presa_oggetto.mat
+load parametri_tot.mat
 
 Tc = 2e-3;
 % Change Dummy with your detector
 detector=DummyDetector(Tc);
-window = 7;
-[b,g] = sgolay(1,1+2*window);
-g_filter=g(:,1)'; % moving average
-g_filter_der=g(:,2)'/Tc; % first derivative
+window = 15; % half window, also try = 7
 
-for it=1:1
+p_window = []; v_window = []; e_window = [];
+p_filt = []; v_filt = []; a_filt = []; e_filt =[];
+e_mod = [];
+
+
+for it=1:1 % da mettere length(tests)
 
     grasp=zeros(length(tests(it).time),1);
     for idx=1:length(tests(it).time)
         p=tests(it).position(idx);
         v=tests(it).velocity(idx);
         e=tests(it).effort(idx);
-        p_vector(idx) = p; v_vector(idx) = v; e_effort(idx)=e;
         if idx==1
             detector.starting(p,v,e);
         end
 
-        if (mod(idx,15)==0)
-%           for iax = 1:15
-%             for id = (1+window):(15-window)
-%                 gripper_position_filt(id,iax) = g_filter*gripper_position((id-window):(id+window),iax);
-%                 gripper_velocity_filt(id,iax) = g_filter*gripper_velocity((id-window):(id+window),iax);
-%                 gripper_effort_filt(id,iax) = g_filter*gripper_effort((id-window):(id+window),iax);
-%                 gripper_acceleration_filt(id,iax) = g_filter_der*gripper_velocity((id-window):(id+window),iax);
-%             end
-%           end
-        
-          clear p_vector
+        if idx<=(1+2*window)
+            p_window = [p_window; p];
+            v_window = [v_window; v];
+            e_window = [e_window; e];
+        else
+            % delayed of window index
+            [p_filt_temp, v_filt_temp, a_filt_temp, e_filt_temp] = detector.filter(window, p_window, v_window, e_window);
+            p_filt = [p_filt; p_filt_temp];
+            v_filt = [v_filt; v_filt_temp];
+            a_filt = [a_filt; a_filt_temp];
+            e_filt = [e_filt; e_filt_temp];
+
+            % shift the window
+            p_window = [p_window; p];
+            p_window = p_window(2:end);
+            v_window = [v_window; v];
+            v_window = v_window(2:end);
+            e_window = [e_window; e];
+            e_window = e_window(2:end);
+
+            % model effort
+            e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
+            e_mod = [e_mod; e_mod_temp];
+            grasp(idx,1)=detector.step(p,v,e,e_mod);
         end
 
-        grasp(idx,1)=detector.step(p,v,e);
         if (grasp(idx,1))
             break
         end
@@ -55,7 +71,6 @@ for it=1:1
     ylabel('v [m/s]')
 
 
-
     subplot(413)
     plot(tests(it).time,tests(it).effort)
     grid on
@@ -68,3 +83,30 @@ for it=1:1
     xlabel('t')
     ylabel('Grasped?')
 end
+
+%% plot test filter
+
+zeros_supp = zeros(window,1);
+
+figure();
+subplot(211)
+plot(tests(it).time,tests(it).velocity)
+grid on
+xlabel('t')
+ylabel('v [m/s]')
+hold on
+v_filt = [zeros_supp; v_filt; zeros_supp; 0];
+plot(tests(it).time,v_filt)
+
+
+subplot(212)
+% plot(tests(it).time,tests(it).effort)
+grid on
+xlabel('t')
+ylabel('effort [N]')
+hold on
+e_filt = [zeros_supp; e_filt; zeros_supp; 0];
+plot(tests(it).time,e_filt)
+hold on 
+e_mod = [zeros_supp; e_mod; zeros_supp; 0];
+plot(tests(it).time,e_mod)
