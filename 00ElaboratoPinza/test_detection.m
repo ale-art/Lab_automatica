@@ -1,7 +1,7 @@
 clear all;close all;clc
 
-load tutte_le_prove.mat
-% load prove_con_presa_oggetto.mat
+% load tutte_le_prove.mat
+load prove_con_presa_oggetto.mat
 % load prove_senza_presa_oggetto.mat
 load parametri_tot.mat
 
@@ -15,7 +15,7 @@ p_filt = []; v_filt = []; a_filt = []; e_filt =[];
 e_mod = [];
 
 
-for it=1:1 % da mettere length(tests)
+for it=5:5 % da mettere length(tests)
 
     grasp=zeros(length(tests(it).time),1);
     for idx=1:length(tests(it).time)
@@ -89,7 +89,7 @@ end
 zeros_supp = zeros(window,1);
 
 figure();
-subplot(211)
+subplot(311)
 plot(tests(it).time,tests(it).velocity)
 grid on
 xlabel('t')
@@ -98,8 +98,15 @@ hold on
 v_filt = [zeros_supp; v_filt; zeros_supp; 0];
 plot(tests(it).time,v_filt)
 
+subplot(312)
+a_filt = [zeros_supp; a_filt; zeros_supp; 0];
+plot(tests(it).time,a_filt)
+grid on
+xlabel('t')
+ylabel('a [m/s^2]')
 
-subplot(212)
+
+subplot(313)
 % plot(tests(it).time,tests(it).effort)
 grid on
 xlabel('t')
@@ -110,3 +117,4 @@ plot(tests(it).time,e_filt)
 hold on 
 e_mod = [zeros_supp; e_mod; zeros_supp; 0];
 plot(tests(it).time,e_mod)
+

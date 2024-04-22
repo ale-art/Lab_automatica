@@ -49,6 +49,7 @@ classdef DummyDetector < BaseDetector
             % else
             %       grasp = 0
             % aggiungere soglia su effort??
+            grasped=0;
 
 
         end
