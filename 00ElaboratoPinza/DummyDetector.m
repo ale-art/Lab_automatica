@@ -40,20 +40,25 @@ classdef DummyDetector < BaseDetector
             end
         end
 
-        function grasped = step(obj, position, velocity, effort, effort_model)
+        function grasped = step(obj, velocity, acceleration, effort, effort_model)
             % abs su suglia minima velocitá per accettare grasp (~0.02, guarda le prove)
-            % if abs(vel) < soglia
-            %       grasp = 0
-            % else abs(effort_model - effort) > soglia differenza con presa
-            %       grasp = 1
-            % else
-            %       grasp = 0
-            % aggiungere soglia su effort??
-            grasped=0;
-
-
-        end
-
-
+            soglia_vel = 3e-3;
+            soglia_eff = 0.15;
+            soglia_acc = -0.0035;
+            grasped = 0;
+            if abs(velocity) > soglia_vel
+                %grasped = 4;
+                if acceleration < soglia_acc
+                    %grasped = 3;
+                    if abs(effort_model - effort) > soglia_eff
+                        grasped = 1;
+                    end
+                end
+            end
+         end
+        % aggiungere soglia su effort??
+        % grasped=0
     end
+
+
 end
