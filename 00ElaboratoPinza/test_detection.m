@@ -3,20 +3,25 @@ clear all;close all;clc
 load tutte_le_prove.mat
 % load prove_con_presa_oggetto.mat
 % load prove_senza_presa_oggetto.mat
+
+% Load the parameters found using the calcoloParametri.m script
 load parametri_tot.mat
 
-Tc = 2e-3;
-% Change Dummy with your detector
-detector=DummyDetector(Tc);
+% Remove the invalid tests
+tests(2) = []; tests(4) = [];
+
+Tc = 2e-3; % Sampling time [s]
+
+% Initialize our detector
+detector=GraspDetector(Tc); 
 window = 19; % half window, also try = 15
 
+% Thresholds for speed, effort and accelaration 
+thr_vel = 3e-3;
+thr_eff = 0.15;
+thr_acc = -0.0035;
 
-
-soglia_vel = 3e-3;
-soglia_eff = 0.1;
-soglia_acc = -0.0035;
-
-for it=1:length(tests) % da mettere length(tests)
+for it=1:length(tests)
 
     grasp=zeros(length(tests(it).time),1);
     p_window = []; v_window = []; e_window = [];
@@ -56,11 +61,8 @@ for it=1:length(tests) % da mettere length(tests)
             e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
             e_mod = [e_mod; e_mod_temp];
             
-            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp); % passa come parametri anche le soglie
-        end
-
-        if (grasp(idx,1)==1)
-            % index_1 = idx; % rendilo vettore e reinizializzalo a 0 all'inizio
+            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp, ...
+                thr_vel,thr_eff,thr_acc); 
         end
     end
 
@@ -93,9 +95,7 @@ for it=1:length(tests) % da mettere length(tests)
     % grid on
     % xlabel('t')
     % ylabel('Grasped?')
-
-
-
+    
     zeros_supp = zeros(window,1);
     %time_filt = tests(it).time(1:idx);
     
@@ -109,7 +109,7 @@ for it=1:length(tests) % da mettere length(tests)
     v_filt = [zeros_supp; v_filt; zeros_supp; 0];
     plot(tests(it).time,v_filt)
     hold on
-    yline(soglia_vel)
+    yline(thr_vel)
     
     subplot(412)
     a_filt = [zeros_supp; a_filt; zeros_supp; 0];
@@ -118,7 +118,7 @@ for it=1:length(tests) % da mettere length(tests)
     xlabel('t')
     ylabel('a [m/s^2]')
     hold on
-    yline(soglia_acc)
+    yline(thr_acc)
     
     subplot(413)
     % plot(tests(it).time,tests(it).effort)
@@ -137,7 +137,5 @@ for it=1:length(tests) % da mettere length(tests)
     grid on
     xlabel('t')
     ylabel('Grasped?')
-
-
 
 end

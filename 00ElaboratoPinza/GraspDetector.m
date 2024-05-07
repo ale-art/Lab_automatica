@@ -1,10 +1,10 @@
-classdef DummyDetector < BaseDetector
+classdef GraspDetector < BaseDetector
 
     properties (Access = protected)
     end
     
     methods (Access = public)
-        function obj = DummyDetector(Tc)
+        function obj = GraspDetector(Tc)
             obj@BaseDetector(Tc);
         end
 
@@ -39,18 +39,16 @@ classdef DummyDetector < BaseDetector
                 a_filt = g_filter_der*velocity((index-window):(index+window));
             end
         end
-
-        function grasped = step(obj, velocity, acceleration, effort, effort_model)
-            % abs su suglia minima velocitá per accettare grasp (~0.02, guarda le prove)
-            soglia_vel = 3e-3;
-            soglia_eff = 0.15;
-            soglia_acc = -0.0035;
+        
+        function grasped = step(obj, velocity, acceleration, effort, effort_model, thr_vel,thr_eff,thr_acc)
+            % abs su suglia minima velocitá per accettare grasp (~0.02,
+            % guarda le prove)
             grasped = 0;
-            if abs(velocity) > soglia_vel
+            if abs(velocity) > thr_vel
                 %grasped = 4;
-                if acceleration < soglia_acc
+                if acceleration < thr_acc
                     %grasped = 3;
-                    if abs(effort_model - effort) > soglia_eff
+                    if abs(effort_model - effort) > thr_eff
                         grasped = 1;
                     end
                 end

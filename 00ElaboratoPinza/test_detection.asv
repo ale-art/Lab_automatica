@@ -3,20 +3,24 @@ clear all;close all;clc
 load tutte_le_prove.mat
 % load prove_con_presa_oggetto.mat
 % load prove_senza_presa_oggetto.mat
+
+% Load the parameters found using the calcoloParametri.m script
 load parametri_tot.mat
 
-Tc = 2e-3;
-% Change Dummy with your detector
-detector=DummyDetector(Tc);
+% Remove the invalid tests
+tests(2) = []; tests(4) = [];
+
+Tc = 2e-3; % Sampling time [s]
+
+% Initialize our detector
+detector=GraspDetector(Tc); 
 window = 19; % half window, also try = 15
 
-
-
 soglia_vel = 3e-3;
-soglia_eff = 0.1;
+soglia_eff = 0.15;
 soglia_acc = -0.0035;
 
-for it=1:12 %length(tests) % da mettere length(tests)
+for it=1:length(tests) % da mettere length(tests)
 
     grasp=zeros(length(tests(it).time),1);
     p_window = []; v_window = []; e_window = [];
@@ -56,7 +60,7 @@ for it=1:12 %length(tests) % da mettere length(tests)
             e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
             e_mod = [e_mod; e_mod_temp];
             
-            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp);
+            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp); % passa come parametri anche le soglie
         end
 
         if (grasp(idx,1)==1)
