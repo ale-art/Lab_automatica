@@ -16,7 +16,7 @@ soglia_vel = 3e-3;
 soglia_eff = 0.1;
 soglia_acc = -0.0035;
 
-for it=1:length(tests) % da mettere length(tests)
+for it=1:12 %length(tests) % da mettere length(tests)
 
     grasp=zeros(length(tests(it).time),1);
     p_window = []; v_window = []; e_window = [];
@@ -56,7 +56,7 @@ for it=1:length(tests) % da mettere length(tests)
             e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
             e_mod = [e_mod; e_mod_temp];
             
-            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp); % passa come parametri anche le soglie
+            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp);
         end
 
         if (grasp(idx,1)==1)
