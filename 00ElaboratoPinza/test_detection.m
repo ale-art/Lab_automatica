@@ -15,7 +15,7 @@ p_filt = []; v_filt = []; a_filt = []; e_filt =[];
 e_mod = [];
 
 
-for it=5:5 % da mettere length(tests)
+for it=1:length(tests) % da mettere length(tests)
 
     grasp=zeros(length(tests(it).time),1);
     for idx=1:length(tests(it).time)
@@ -49,72 +49,90 @@ for it=5:5 % da mettere length(tests)
             % model effort
             e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
             e_mod = [e_mod; e_mod_temp];
-            grasp(idx,1)=detector.step(p,v,e,e_mod);
+            grasp(idx,1)=detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp);
         end
 
-        if (grasp(idx,1))
+        if ((grasp(idx,1))==1)
             break
         end
     end
 
-    figure
-    subplot(411)
-    plot(tests(it).time,tests(it).position)
-    grid on
-    xlabel('t')
-    ylabel('p [m]')
+    zeros_supp = zeros(window,1); %per aggiungere dati che vengono tagliati dal filtro all'inizio e fine 
+    
+    % PLOT DATI RAW
 
-    subplot(412)
-    plot(tests(it).time,tests(it).velocity)
-    grid on
-    xlabel('t')
-    ylabel('v [m/s]')
+    % figure
+    % subplot(411)
+    % plot(tests(it).time,tests(it).position)
+    % grid on
+    % xlabel('t')
+    % ylabel('p [m]')
+    % 
+    % subplot(412)
+    % plot(tests(it).time,tests(it).velocity)
+    % grid on
+    % xlabel('t')
+    % ylabel('v [m/s]')
+    % 
+    % 
+    % subplot(413)
+    % plot(tests(it).time,tests(it).effort)
+    % grid on
+    % xlabel('t')
+    % ylabel('effort [N]')
+    % 
+    % subplot(414)
+    % plot(tests(it).time,grasp)
+    % grid on
+    % xlabel('t')
+    % ylabel('Grasped?')
+    % 
 
+    % PLOT DATI FILTRATI (taglio dei dati quando avviene grasp)
 
-    subplot(413)
-    plot(tests(it).time,tests(it).effort)
-    grid on
-    xlabel('t')
-    ylabel('effort [N]')
-
-    subplot(414)
-    plot(tests(it).time,grasp)
-    grid on
-    xlabel('t')
-    ylabel('Grasped?')
+    % figure();
+    % subplot(411)
+    % plot(tests(it).time(1:length(v_filt)),tests(it).velocity(1:length(v_filt)))
+    % grid on
+    % xlabel('t')
+    % ylabel('v [m/s]')
+    % hold on
+    % v_filt = [zeros_supp; v_filt; zeros_supp; 0];
+    % plot(tests(it).time(1:length(v_filt)),v_filt)
+    % 
+    % subplot(412)
+    % a_filt = [zeros_supp; a_filt; zeros_supp; 0];
+    % plot(tests(it).time(1:length(a_filt)),a_filt)
+    % grid on
+    % xlabel('t')
+    % ylabel('a [m/s^2]')
+    % 
+    % 
+    % subplot(413)
+    % plot(tests(it).time,tests(it).effort)
+    % grid on
+    % xlabel('t')
+    % ylabel('effort [N]')
+    % hold on
+    % e_filt = [zeros_supp; e_filt; zeros_supp; 0];
+    % plot(tests(it).time(1:length(e_filt)),e_filt)
+    % hold on 
+    % e_mod = [zeros_supp; e_mod; zeros_supp; 0];
+    % plot(tests(it).time(1:length(e_mod)),e_mod)
+    % 
+    % subplot(414)
+    % plot(tests(it).time(1:idx),grasp(1:idx))
+    % grid on
+    % xlabel('t')
+    % ylabel('Grasped?')
+    % 
+    % 
+    p_window = []; v_window = []; e_window = [];
+    p_filt = []; v_filt = []; a_filt = []; e_filt =[];
+    e_mod = [];
 end
 
-%% plot test filter
-
-zeros_supp = zeros(window,1);
-
-figure();
-subplot(311)
-plot(tests(it).time,tests(it).velocity)
-grid on
-xlabel('t')
-ylabel('v [m/s]')
-hold on
-v_filt = [zeros_supp; v_filt; zeros_supp; 0];
-plot(tests(it).time,v_filt)
-
-subplot(312)
-a_filt = [zeros_supp; a_filt; zeros_supp; 0];
-plot(tests(it).time,a_filt)
-grid on
-xlabel('t')
-ylabel('a [m/s^2]')
 
 
-subplot(313)
-% plot(tests(it).time,tests(it).effort)
-grid on
-xlabel('t')
-ylabel('effort [N]')
-hold on
-e_filt = [zeros_supp; e_filt; zeros_supp; 0];
-plot(tests(it).time,e_filt)
-hold on 
-e_mod = [zeros_supp; e_mod; zeros_supp; 0];
-plot(tests(it).time,e_mod)
+
 
