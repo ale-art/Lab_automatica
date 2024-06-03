@@ -11,8 +11,8 @@ Tc = 0.001;
 % J*s^2+Kp*s+Ki
 % s^2+Kp/J*s+Ki/J
 
-Kpv1=5135;
-Tiv1=0.2;
+Kpv1=0.001;
+Tiv1=100000;
 Kiv1=Kpv1/Tiv1;
 
 Tdv1 = 0.0;
@@ -21,8 +21,8 @@ Tfv1 = Tdv1 / 5;
 
 
 % Define outer controller parameters
-Kpp1 = 15;
-Kip1 = 200;
+Kpp1 = 1;
+Kip1 = 0;
 Kdp1 = 0;
 
 % Define control objects
@@ -33,8 +33,8 @@ cascade_ctrl1 = CascadeController(Tc, inner_ctrl1, outer_ctrl1);
 
 
 %  ---------------------------CONTROLLORE 2 --------------------------------------
-Kpv2=1;
-Tiv2=9999999999999;
+Kpv2=0.001;
+Tiv2=100000;
 Kiv2=Kpv2/Tiv2;
 
 
@@ -44,7 +44,7 @@ Tfv2 = Tdv2 / 5;
 
 
 % Define outer controller parameters
-Kpp2 = 15;
+Kpp2 = 1;
 Kip2 = 0;
 Kdp2 = 0;
 inner_ctrl2 = PIDController(Tc, Kpv2, Kiv2, Kdv2, [], [], []);
