@@ -16,12 +16,16 @@ Tc = 2e-3; % Sampling time [s]
 detector=GraspDetector(Tc); 
 window = 19; % half window, also try = 15
 
+<<<<<<< HEAD
+for it=1:length(tests) % da mettere length(tests)
+=======
 % Thresholds for speed, effort and accelaration 
 thr_vel = 3e-3;
 thr_eff = 0.15;
 thr_acc = -0.0035;
 
 for it=1:length(tests)
+>>>>>>> 684756148c7d59507d7e8d8c35398443593c8b4e
 
     grasp=zeros(length(tests(it).time),1);
     p_window = []; v_window = []; e_window = [];
@@ -60,6 +64,20 @@ for it=1:length(tests)
             % model effort
             e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
             e_mod = [e_mod; e_mod_temp];
+<<<<<<< HEAD
+            grasp(idx,1)=detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp);
+        end
+
+        if ((grasp(idx,1))==1)
+            break
+        end
+    end
+
+    zeros_supp = zeros(window,1); %per aggiungere dati che vengono tagliati dal filtro all'inizio e fine 
+    
+    % PLOT DATI RAW
+
+=======
             
             grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp, ...
                 thr_vel,thr_eff,thr_acc); 
@@ -70,6 +88,7 @@ for it=1:length(tests)
     grasp_plot = zeros(length(tests(it).time),1);
     grasp_plot(index_min) = 1;
     % 
+>>>>>>> 684756148c7d59507d7e8d8c35398443593c8b4e
     % figure
     % subplot(411)
     % plot(tests(it).time,tests(it).position)
@@ -95,6 +114,58 @@ for it=1:length(tests)
     % grid on
     % xlabel('t')
     % ylabel('Grasped?')
+<<<<<<< HEAD
+    % 
+
+    % PLOT DATI FILTRATI (taglio dei dati quando avviene grasp)
+
+    % figure();
+    % subplot(411)
+    % plot(tests(it).time(1:length(v_filt)),tests(it).velocity(1:length(v_filt)))
+    % grid on
+    % xlabel('t')
+    % ylabel('v [m/s]')
+    % hold on
+    % v_filt = [zeros_supp; v_filt; zeros_supp; 0];
+    % plot(tests(it).time(1:length(v_filt)),v_filt)
+    % 
+    % subplot(412)
+    % a_filt = [zeros_supp; a_filt; zeros_supp; 0];
+    % plot(tests(it).time(1:length(a_filt)),a_filt)
+    % grid on
+    % xlabel('t')
+    % ylabel('a [m/s^2]')
+    % 
+    % 
+    % subplot(413)
+    % plot(tests(it).time,tests(it).effort)
+    % grid on
+    % xlabel('t')
+    % ylabel('effort [N]')
+    % hold on
+    % e_filt = [zeros_supp; e_filt; zeros_supp; 0];
+    % plot(tests(it).time(1:length(e_filt)),e_filt)
+    % hold on 
+    % e_mod = [zeros_supp; e_mod; zeros_supp; 0];
+    % plot(tests(it).time(1:length(e_mod)),e_mod)
+    % 
+    % subplot(414)
+    % plot(tests(it).time(1:idx),grasp(1:idx))
+    % grid on
+    % xlabel('t')
+    % ylabel('Grasped?')
+    % 
+    % 
+    p_window = []; v_window = []; e_window = [];
+    p_filt = []; v_filt = []; a_filt = []; e_filt =[];
+    e_mod = [];
+end
+
+
+
+
+
+=======
     
     zeros_supp = zeros(window,1);
     %time_filt = tests(it).time(1:idx);
@@ -139,3 +210,4 @@ for it=1:length(tests)
     ylabel('Grasped?')
 
 end
+>>>>>>> 684756148c7d59507d7e8d8c35398443593c8b4e
