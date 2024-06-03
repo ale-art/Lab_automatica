@@ -10,8 +10,8 @@ Tc = 0.001;
 % Kp+Ki/s * 1/(J*s) +1
 % J*s^2+Kp*s+Ki
 % s^2+Kp/J*s+Ki/J
-Kpv1=5800;
-Tiv1=0.035;
+Kpv1=2770;
+Tiv1=0.04;
 Kiv1=Kpv1/Tiv1;
 
 Tdv1 = 0.0;
@@ -30,8 +30,8 @@ inner_ctrl1.setUMax(3000);
 outer_ctrl1 = PIDController(Tc, Kpp1, Kip1, Kdp1, [], [], []);
 cascade_ctrl1 = CascadeController(Tc, inner_ctrl1, outer_ctrl1);
 
-Kpv2=1100;
-Tiv2=0.03;
+Kpv2=1;
+Tiv2=0;
 Kiv2=Kpv2/Tiv2;
 
 
