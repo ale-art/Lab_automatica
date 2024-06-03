@@ -1,5 +1,5 @@
 % Clear workspace, close figures, and clear command window
-clear all;
+% clear all;
 close all;
 clc;
 
@@ -11,18 +11,17 @@ Tc = 0.001;
 % J*s^2+Kp*s+Ki
 % s^2+Kp/J*s+Ki/J
 
-Kpv1=5135;
-Tiv1=0.2;
+Kpv1=3887;
+Tiv1=0.05;
 Kiv1=Kpv1/Tiv1;
 
 Tdv1 = 0.0;
 Kdv1 = Kpv1 * Tdv1;
 Tfv1 = Tdv1 / 5;
 
-
 % Define outer controller parameters
 Kpp1 = 15;
-Kip1 = 200;
+Kip1 = 0;
 Kdp1 = 0;
 
 % Define control objects
@@ -33,7 +32,7 @@ cascade_ctrl1 = CascadeController(Tc, inner_ctrl1, outer_ctrl1);
 
 
 %  ---------------------------CONTROLLORE 2 --------------------------------------
-Kpv2=1;
+Kpv2=0;
 Tiv2=9999999999999;
 Kiv2=Kpv2/Tiv2;
 
@@ -41,6 +40,7 @@ Kiv2=Kpv2/Tiv2;
 Tdv2 = 0.0;
 Kdv2 = Kpv2 * Tdv2;
 Tfv2 = Tdv2 / 5;
+
 
 
 % Define outer controller parameters
