@@ -1,23 +1,37 @@
 clear all;close all;clc
 
-% load tutte_le_prove.mat
-load prove_con_presa_oggetto.mat
+load tutte_le_prove.mat
+% load prove_con_presa_oggetto.mat
 % load prove_senza_presa_oggetto.mat
+
+% Load the parameters found using the calcoloParametri.m script
 load parametri_tot.mat
 
-Tc = 2e-3;
-% Change Dummy with your detector
-detector=DummyDetector(Tc);
-window = 15; % half window, also try = 7
+% Remove the invalid tests
+tests(2) = []; tests(4) = [];
 
-p_window = []; v_window = []; e_window = [];
-p_filt = []; v_filt = []; a_filt = []; e_filt =[];
-e_mod = [];
+Tc = 2e-3; % Sampling time [s]
 
+% Initialize our detector
+detector=GraspDetector(Tc); 
+window = 19; % half window, also try = 15
 
+<<<<<<< HEAD
 for it=1:length(tests) % da mettere length(tests)
+=======
+% Thresholds for speed, effort and accelaration 
+thr_vel = 3e-3;
+thr_eff = 0.15;
+thr_acc = -0.0035;
+
+for it=1:length(tests)
+>>>>>>> 684756148c7d59507d7e8d8c35398443593c8b4e
 
     grasp=zeros(length(tests(it).time),1);
+    p_window = []; v_window = []; e_window = [];
+    p_filt = []; v_filt = []; a_filt = []; e_filt =[];
+    e_mod = [];
+
     for idx=1:length(tests(it).time)
         p=tests(it).position(idx);
         v=tests(it).velocity(idx);
@@ -26,6 +40,7 @@ for it=1:length(tests) % da mettere length(tests)
             detector.starting(p,v,e);
         end
 
+        %%%%%%%%%%%%%%%%%%
         if idx<=(1+2*window)
             p_window = [p_window; p];
             v_window = [v_window; v];
@@ -49,6 +64,7 @@ for it=1:length(tests) % da mettere length(tests)
             % model effort
             e_mod_temp = [a_filt_temp v_filt_temp tanh(1000*v_filt_temp)] * parametri_tot;
             e_mod = [e_mod; e_mod_temp];
+<<<<<<< HEAD
             grasp(idx,1)=detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp);
         end
 
@@ -61,6 +77,18 @@ for it=1:length(tests) % da mettere length(tests)
     
     % PLOT DATI RAW
 
+=======
+            
+            grasp(idx,1) = detector.step(v_filt_temp,a_filt_temp,e_filt_temp,e_mod_temp, ...
+                thr_vel,thr_eff,thr_acc); 
+        end
+    end
+
+    index_min = find(grasp==1,1,'first');
+    grasp_plot = zeros(length(tests(it).time),1);
+    grasp_plot(index_min) = 1;
+    % 
+>>>>>>> 684756148c7d59507d7e8d8c35398443593c8b4e
     % figure
     % subplot(411)
     % plot(tests(it).time,tests(it).position)
@@ -86,6 +114,7 @@ for it=1:length(tests) % da mettere length(tests)
     % grid on
     % xlabel('t')
     % ylabel('Grasped?')
+<<<<<<< HEAD
     % 
 
     % PLOT DATI FILTRATI (taglio dei dati quando avviene grasp)
@@ -136,3 +165,49 @@ end
 
 
 
+=======
+    
+    zeros_supp = zeros(window,1);
+    %time_filt = tests(it).time(1:idx);
+    
+    figure();
+    subplot(411)
+    plot(tests(it).time,tests(it).velocity)
+    grid on
+    xlabel('t')
+    ylabel('v [m/s]')
+    hold on
+    v_filt = [zeros_supp; v_filt; zeros_supp; 0];
+    plot(tests(it).time,v_filt)
+    hold on
+    yline(thr_vel)
+    
+    subplot(412)
+    a_filt = [zeros_supp; a_filt; zeros_supp; 0];
+    plot(tests(it).time,a_filt)
+    grid on
+    xlabel('t')
+    ylabel('a [m/s^2]')
+    hold on
+    yline(thr_acc)
+    
+    subplot(413)
+    % plot(tests(it).time,tests(it).effort)
+    grid on
+    xlabel('t')
+    ylabel('effort [N]')
+    hold on
+    e_filt = [zeros_supp; e_filt; zeros_supp; 0];
+    plot(tests(it).time,e_filt)
+    hold on 
+    e_mod = [zeros_supp; e_mod; zeros_supp; 0];
+    plot(tests(it).time,e_mod)
+
+    subplot(414)
+    plot(tests(it).time,grasp_plot)
+    grid on
+    xlabel('t')
+    ylabel('Grasped?')
+
+end
+>>>>>>> 684756148c7d59507d7e8d8c35398443593c8b4e
