@@ -1,5 +1,5 @@
 % Clear workspace, close figures, and clear command window
-% clear all;
+clear all;
 close all;
 clc;
 
@@ -11,7 +11,7 @@ Tc = 0.001;
 % J*s^2+Kp*s+Ki
 % s^2+Kp/J*s+Ki/J
 
-Kpv1=3887;
+Kpv1=4339;
 Tiv1=0.05;
 Kiv1=Kpv1/Tiv1;
 
@@ -20,20 +20,20 @@ Kdv1 = Kpv1 * Tdv1;
 Tfv1 = Tdv1 / 5;
 
 % Define outer controller parameters
-Kpp1 = 15;
+Kpp1 = 100;
 Kip1 = 0;
 Kdp1 = 0;
 
 % Define control objects
 inner_ctrl1 = PIDController(Tc, Kpv1, Kiv1, Kdv1, [], [], []);
-inner_ctrl1.setUMax(840); %limiti torque1 del nostro robot 
+inner_ctrl1.setUMax(840); % limiti torque1 del nostro robot 
 outer_ctrl1 = PIDController(Tc, Kpp1, Kip1, Kdp1, [], [], []);
 cascade_ctrl1 = CascadeController(Tc, inner_ctrl1, outer_ctrl1);
 
 
 %  ---------------------------CONTROLLORE 2 --------------------------------------
-Kpv2=0;
-Tiv2=9999999999999;
+Kpv2=1365;
+Tiv2=0.033;
 Kiv2=Kpv2/Tiv2;
 
 
@@ -44,7 +44,7 @@ Tfv2 = Tdv2 / 5;
 
 
 % Define outer controller parameters
-Kpp2 = 15;
+Kpp2 = 100;
 Kip2 = 0;
 Kdp2 = 0;
 inner_ctrl2 = PIDController(Tc, Kpv2, Kiv2, Kdv2, [], [], []);
