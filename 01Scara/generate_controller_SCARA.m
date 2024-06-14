@@ -1,4 +1,4 @@
-% Clear workspace, close figures, and clear command window
+ % Clear workspace, close figures, and clear command window
 clear all;
 close all;
 clc;
@@ -20,8 +20,8 @@ Kdv1 = Kpv1 * Tdv1;
 Tfv1 = Tdv1 / 5;
 
 % Define outer controller parameters
-Kpp1 = 100;
-Kip1 = 0;
+Kpp1 = 1500; %100
+Kip1 = 100;
 Kdp1 = 0;
 
 % Define control objects
@@ -44,8 +44,8 @@ Tfv2 = Tdv2 / 5;
 
 
 % Define outer controller parameters
-Kpp2 = 100;
-Kip2 = 0;
+Kpp2 = 1500; %100
+Kip2 = 100;
 Kdp2 = 0;
 inner_ctrl2 = PIDController(Tc, Kpv2, Kiv2, Kdv2, [], [], []);
 inner_ctrl2.setUMax(220); %limiti torque2 del nostro robot 

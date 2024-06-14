@@ -1,5 +1,5 @@
 
-clear all; close all; clc;
+% clear all; close all; clc;
 
 
 % Set the maximum velocities (max_Dy) and maximum accelerations (max_DDy)
@@ -13,7 +13,8 @@ robot.initialize;
 Tc = robot.getSamplingPeriod;
 
 %load("+progetto_data"+filesep+"dummy_controller_object")
-load decentralized_ctrl_j1j2_v1.mat
+%load decentralized_ctrl_j1j2_v2.mat 
+%da scommentare dopo
 
 show_figure=false;
 
