@@ -19,7 +19,7 @@ Tc = robot.getSamplingPeriod;
 show_figure=false;
 
 % da modificare per alzare score --> % totale score 85.7%
-max_Dcart =  [16,16]'; 
+max_Dcart =  [15,15]'; 
 max_DDcart = [12,12]';
 
 ctrl=decentralized_ctrl;

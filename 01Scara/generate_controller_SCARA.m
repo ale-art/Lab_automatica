@@ -44,7 +44,7 @@ Tfv2 = Tdv2 / 5;
 
 
 % Define outer controller parameters
-Kpp2 = 800; %100
+Kpp2 = 900; %100
 Kip2 = 20;
 Kdp2 = 0.0;
 inner_ctrl2 = PIDController(Tc, Kpv2, Kiv2, Kdv2, [], [], []);
